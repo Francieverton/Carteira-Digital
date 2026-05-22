@@ -40,4 +40,27 @@ public class CarteiraService {
         transacao.setCarteiraOrigem(carteira);
         transacaoRepository.save(transacao);
     }
+
+    @Transactional
+    public void deposito (Long carteiraId, BigDecimal valor) {
+
+        Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
+        -> new RuntimeException("Carteira não encontrada!"));
+
+        if (valor.compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("O valor do depósito deve ser mais que zero!");
+        }
+        else {
+            carteira.setSaldo(carteira.getSaldo().add(valor));
+        }
+
+        Transacao transacao = new Transacao();
+
+        carteiraRepository.save(carteira);
+
+        transacao.setTipo(TipoTransacao.DEPOSITO);
+        transacao.setValor(valor);
+        transacao.setCarteiraOrigem(carteira);
+        transacaoRepository.save(transacao);
+    }
 }
