@@ -63,4 +63,41 @@ public class CarteiraService {
         transacao.setCarteiraOrigem(carteira);
         transacaoRepository.save(transacao);
     }
+
+    @Transactional
+    public void transferir (Long origemId, Long destinoId, BigDecimal valor) {
+
+        Carteira carteiraOrigem = carteiraRepository.findById(origemId).orElseThrow(()
+                -> new RuntimeException("Carteira de Origem não encontrada."));
+
+        Carteira carteiraDestino = carteiraRepository.findById(destinoId).orElseThrow(()
+                -> new RuntimeException("Carteira de destino não encontrada."));
+
+        if (carteiraOrigem.getId().equals(carteiraDestino.getId())) {
+            throw new RuntimeException("Não pode fazer o depósito para a sua própria conta!");
+
+        }
+        else if (carteiraOrigem.getSaldo().compareTo(valor) < 0){
+            throw new RuntimeException("O valor da carteira de origem deve ser maior ou igual que o valor da transação!");
+        }
+        else if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("O valor do depósito deve ser maior que zero!");
+
+        }
+        else {
+            carteiraOrigem.setSaldo(carteiraOrigem.getSaldo().subtract(valor));
+            carteiraDestino.setSaldo(carteiraDestino.getSaldo().add(valor));
+        }
+
+        Transacao transacao = new Transacao();
+
+        carteiraRepository.save(carteiraOrigem);
+        carteiraRepository.save(carteiraDestino);
+
+        transacao.setTipo(TipoTransacao.TRANSFERENCIA);
+        transacao.setCarteiraOrigem(carteiraOrigem);
+        transacao.setCarteiraDestino(carteiraDestino);
+        transacao.setValor(valor);
+        transacaoRepository.save(transacao);
+    }
 }
