@@ -1,5 +1,6 @@
 package com.francieverton.digital_wallet.controller;
 
+import com.francieverton.digital_wallet.dto.CarteiraResponseDTO;
 import com.francieverton.digital_wallet.dto.MovimentacaoRequestDTO;
 import com.francieverton.digital_wallet.service.CarteiraService;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +35,12 @@ public class CarteiraController {
     public void transferir (@PathVariable Long id, @RequestBody MovimentacaoRequestDTO dto){
 
         carteiraService.transferir(id, dto.getCarteiraDestinoId(), dto.getValor());
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CarteiraResponseDTO buscarCarteira (@PathVariable Long id){
+
+        return carteiraService.consultarCarteira(id);
     }
 }
