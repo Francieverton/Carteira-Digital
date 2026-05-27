@@ -1,5 +1,6 @@
 package com.francieverton.digital_wallet.service;
 
+import com.francieverton.digital_wallet.dto.CarteiraResponseDTO;
 import com.francieverton.digital_wallet.model.Carteira;
 import com.francieverton.digital_wallet.model.TipoTransacao;
 import com.francieverton.digital_wallet.model.Transacao;
@@ -99,5 +100,16 @@ public class CarteiraService {
         transacao.setCarteiraDestino(carteiraDestino);
         transacao.setValor(valor);
         transacaoRepository.save(transacao);
+    }
+
+    public CarteiraResponseDTO consultarCarteira (Long carteiraId) {
+
+        Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
+                -> new RuntimeException("Carteira não encontrada!"));
+
+        CarteiraResponseDTO carteiraResponseDTO =
+                new CarteiraResponseDTO(carteira.getId(), carteira.getSaldo(), carteira.getMoeda());
+
+        return carteiraResponseDTO;
     }
 }
