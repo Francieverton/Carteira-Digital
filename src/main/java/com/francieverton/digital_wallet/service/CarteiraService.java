@@ -127,4 +127,18 @@ public class CarteiraService {
                 transacao.getDataHora()
         ));
     }
+
+    @Transactional
+    public CarteiraResponseDTO criarCarteira() {
+        Carteira novaCarteira = new Carteira();
+        novaCarteira.setSaldo(BigDecimal.ZERO);
+        novaCarteira.setMoeda("BRL"); // Moeda padrão
+
+        carteiraRepository.save(novaCarteira);
+
+        CarteiraResponseDTO carteiraResponseDTO =
+                new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
+
+        return carteiraResponseDTO;
+    }
 }

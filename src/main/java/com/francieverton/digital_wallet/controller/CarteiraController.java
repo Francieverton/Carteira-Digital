@@ -53,4 +53,10 @@ public class CarteiraController {
 
         return carteiraService.consultarExtrato(id, pageable);
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CarteiraResponseDTO criarCarteira() {
+        return carteiraService.criarCarteira();
+    }
 }
