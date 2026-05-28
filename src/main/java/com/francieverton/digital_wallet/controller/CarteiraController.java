@@ -2,12 +2,15 @@ package com.francieverton.digital_wallet.controller;
 
 import com.francieverton.digital_wallet.dto.CarteiraResponseDTO;
 import com.francieverton.digital_wallet.dto.MovimentacaoRequestDTO;
+import com.francieverton.digital_wallet.dto.TransacaoResponseDTO;
 import com.francieverton.digital_wallet.service.CarteiraService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/carteiras")
@@ -42,5 +45,12 @@ public class CarteiraController {
     public CarteiraResponseDTO buscarCarteira (@PathVariable Long id){
 
         return carteiraService.consultarCarteira(id);
+    }
+
+    @GetMapping("/{id}/extrato")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<TransacaoResponseDTO> extrato (@PathVariable Long id, @PageableDefault(size = 10) Pageable pageable){
+
+        return carteiraService.consultarExtrato(id, pageable);
     }
 }
