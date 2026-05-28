@@ -110,10 +110,7 @@ public class CarteiraService {
         Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
                 -> new RuntimeException("Carteira não encontrada!"));
 
-        CarteiraResponseDTO carteiraResponseDTO =
-                new CarteiraResponseDTO(carteira.getId(), carteira.getSaldo(), carteira.getMoeda());
-
-        return carteiraResponseDTO;
+        return new CarteiraResponseDTO(carteira.getId(), carteira.getSaldo(), carteira.getMoeda());
     }
 
     public Page<TransacaoResponseDTO> consultarExtrato (Long carteiraId, Pageable pageable){
@@ -132,13 +129,10 @@ public class CarteiraService {
     public CarteiraResponseDTO criarCarteira() {
         Carteira novaCarteira = new Carteira();
         novaCarteira.setSaldo(BigDecimal.ZERO);
-        novaCarteira.setMoeda("BRL"); // Moeda padrão
+        novaCarteira.setMoeda("BRL");
 
         carteiraRepository.save(novaCarteira);
 
-        CarteiraResponseDTO carteiraResponseDTO =
-                new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
-
-        return carteiraResponseDTO;
+        return new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
     }
 }
