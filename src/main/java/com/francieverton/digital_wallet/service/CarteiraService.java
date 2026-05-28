@@ -1,6 +1,7 @@
 package com.francieverton.digital_wallet.service;
 
 import com.francieverton.digital_wallet.dto.CarteiraResponseDTO;
+import com.francieverton.digital_wallet.dto.TransacaoResponseDTO;
 import com.francieverton.digital_wallet.model.Carteira;
 import com.francieverton.digital_wallet.model.TipoTransacao;
 import com.francieverton.digital_wallet.model.Transacao;
@@ -8,6 +9,8 @@ import com.francieverton.digital_wallet.repository.CarteiraRepository;
 import com.francieverton.digital_wallet.repository.TransacaoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -111,5 +114,17 @@ public class CarteiraService {
                 new CarteiraResponseDTO(carteira.getId(), carteira.getSaldo(), carteira.getMoeda());
 
         return carteiraResponseDTO;
+    }
+
+    public Page<TransacaoResponseDTO> consultarExtrato (Long carteiraId, Pageable pageable){
+
+        Page<Transacao> transacaoPage = transacaoRepository.findByCarteiraOrigemIdOrCarteiraDestinoId(carteiraId, carteiraId, pageable);
+
+        return transacaoPage.map(transacao -> new TransacaoResponseDTO(
+                transacao.getId(),
+                transacao.getTipo(),
+                transacao.getValor(),
+                transacao.getDataHora()
+        ));
     }
 }
