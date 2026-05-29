@@ -5,8 +5,10 @@ import com.francieverton.digital_wallet.dto.TransacaoResponseDTO;
 import com.francieverton.digital_wallet.model.Carteira;
 import com.francieverton.digital_wallet.model.TipoTransacao;
 import com.francieverton.digital_wallet.model.Transacao;
+import com.francieverton.digital_wallet.model.Usuario;
 import com.francieverton.digital_wallet.repository.CarteiraRepository;
 import com.francieverton.digital_wallet.repository.TransacaoRepository;
+import com.francieverton.digital_wallet.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ public class CarteiraService {
 
     private final CarteiraRepository carteiraRepository;
     private final TransacaoRepository transacaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public void sacar (Long carteiraId, BigDecimal valor) {
@@ -126,13 +129,19 @@ public class CarteiraService {
     }
 
     @Transactional
-    public CarteiraResponseDTO criarCarteira() {
+    public CarteiraResponseDTO criarCarteira(Long usuarioId) {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(()
+                -> new RuntimeException("Usuário não encontrado!"));
+
         Carteira novaCarteira = new Carteira();
         novaCarteira.setSaldo(BigDecimal.ZERO);
         novaCarteira.setMoeda("BRL");
+        novaCarteira.setUsuario(usuario);
 
         carteiraRepository.save(novaCarteira);
 
         return new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
     }
+
 }

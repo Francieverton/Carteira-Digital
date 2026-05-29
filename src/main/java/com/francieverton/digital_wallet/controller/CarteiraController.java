@@ -54,9 +54,9 @@ public class CarteiraController {
         return carteiraService.consultarExtrato(id, pageable);
     }
 
-    @PostMapping
+    @PostMapping("/usuario/{usuarioId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public CarteiraResponseDTO criarCarteira() {
-        return carteiraService.criarCarteira();
+    public CarteiraResponseDTO criarCarteira(@PathVariable Long usuarioId) {
+        return carteiraService.criarCarteira(usuarioId);
     }
 }
