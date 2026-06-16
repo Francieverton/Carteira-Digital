@@ -33,14 +33,7 @@ public class CarteiraService {
 
         carteira.sacar(valor);
 
-        Transacao transacao = new Transacao();
-
-        carteiraRepository.save(carteira);
-
-        transacao.setTipo(TipoTransacao.SAQUE);
-        transacao.setValor(valor);
-        transacao.setCarteiraOrigem(carteira);
-        transacaoRepository.save(transacao);
+        registrarTransacao(TipoTransacao.SAQUE, carteira, null, valor);
     }
 
     @Transactional
@@ -51,14 +44,7 @@ public class CarteiraService {
 
         carteira.depositar(valor);
 
-        Transacao transacao = new Transacao();
-
-        carteiraRepository.save(carteira);
-
-        transacao.setTipo(TipoTransacao.DEPOSITO);
-        transacao.setValor(valor);
-        transacao.setCarteiraOrigem(carteira);
-        transacaoRepository.save(transacao);
+        registrarTransacao(TipoTransacao.DEPOSITO, carteira, null, valor);
     }
 
     @Transactional
@@ -78,16 +64,7 @@ public class CarteiraService {
         carteiraOrigem.sacar(valor);
         carteiraDestino.depositar(valor);
 
-        Transacao transacao = new Transacao();
-
-        carteiraRepository.save(carteiraOrigem);
-        carteiraRepository.save(carteiraDestino);
-
-        transacao.setTipo(TipoTransacao.TRANSFERENCIA);
-        transacao.setCarteiraOrigem(carteiraOrigem);
-        transacao.setCarteiraDestino(carteiraDestino);
-        transacao.setValor(valor);
-        transacaoRepository.save(transacao);
+        registrarTransacao(TipoTransacao.TRANSFERENCIA, carteiraOrigem, carteiraDestino, valor);
     }
 
     public CarteiraResponseDTO consultarCarteira (Long carteiraId) {
@@ -124,6 +101,19 @@ public class CarteiraService {
         carteiraRepository.save(novaCarteira);
 
         return new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
+    }
+
+    private void registrarTransacao (TipoTransacao tipoTransacao, Carteira origem, Carteira destino, BigDecimal valor) {
+
+        Transacao transacao = new Transacao();
+
+        transacao.setTipo(tipoTransacao);
+        transacao.setCarteiraOrigem(origem);
+        transacao.setValor(valor);
+        if (destino!= null){
+            transacao.setCarteiraDestino(destino);
+        }
+        transacaoRepository.save(transacao);
     }
 
 }
