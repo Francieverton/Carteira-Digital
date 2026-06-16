@@ -31,12 +31,7 @@ public class CarteiraService {
         Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
                 -> new RuntimeException("Carteira não encontrada"));
 
-        if (carteira.getSaldo().compareTo(valor) < 0){
-            throw new RuntimeException("Saldo insuficiente!");
-        }
-        else {
-            carteira.setSaldo(carteira.getSaldo().subtract(valor));
-        }
+        carteira.sacar(valor);
 
         Transacao transacao = new Transacao();
 
@@ -54,12 +49,7 @@ public class CarteiraService {
         Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
         -> new RuntimeException("Carteira não encontrada!"));
 
-        if (valor.compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("O valor do depósito deve ser mais que zero!");
-        }
-        else {
-            carteira.setSaldo(carteira.getSaldo().add(valor));
-        }
+        carteira.depositar(valor);
 
         Transacao transacao = new Transacao();
 
@@ -84,17 +74,9 @@ public class CarteiraService {
             throw new RuntimeException("Não pode fazer o depósito para a sua própria conta!");
 
         }
-        else if (carteiraOrigem.getSaldo().compareTo(valor) < 0){
-            throw new RuntimeException("O valor da carteira de origem deve ser maior ou igual que o valor da transação!");
-        }
-        else if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("O valor do depósito deve ser maior que zero!");
 
-        }
-        else {
-            carteiraOrigem.setSaldo(carteiraOrigem.getSaldo().subtract(valor));
-            carteiraDestino.setSaldo(carteiraDestino.getSaldo().add(valor));
-        }
+        carteiraOrigem.sacar(valor);
+        carteiraDestino.depositar(valor);
 
         Transacao transacao = new Transacao();
 
