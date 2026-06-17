@@ -6,7 +6,7 @@ import com.francieverton.digital_wallet.model.Carteira;
 import com.francieverton.digital_wallet.model.TipoTransacao;
 import com.francieverton.digital_wallet.model.Transacao;
 import com.francieverton.digital_wallet.model.Usuario;
-import com.francieverton.digital_wallet.repository.CarteiraRepository;
+import com.francieverton.digital_wallet.port.CarteiraPort;
 import com.francieverton.digital_wallet.repository.TransacaoRepository;
 import com.francieverton.digital_wallet.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -21,14 +21,14 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class CarteiraService {
 
-    private final CarteiraRepository carteiraRepository;
+    private final CarteiraPort carteiraPort;
     private final TransacaoRepository transacaoRepository;
     private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public void sacar (Long carteiraId, BigDecimal valor) {
 
-        Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
+        Carteira carteira = carteiraPort.buscarId(carteiraId).orElseThrow(()
                 -> new RuntimeException("Carteira não encontrada"));
 
         carteira.sacar(valor);
@@ -39,7 +39,7 @@ public class CarteiraService {
     @Transactional
     public void deposito (Long carteiraId, BigDecimal valor) {
 
-        Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
+        Carteira carteira = carteiraPort.buscarId(carteiraId).orElseThrow(()
         -> new RuntimeException("Carteira não encontrada!"));
 
         carteira.depositar(valor);
@@ -50,10 +50,10 @@ public class CarteiraService {
     @Transactional
     public void transferir (Long origemId, Long destinoId, BigDecimal valor) {
 
-        Carteira carteiraOrigem = carteiraRepository.findById(origemId).orElseThrow(()
+        Carteira carteiraOrigem = carteiraPort.buscarId(origemId).orElseThrow(()
                 -> new RuntimeException("Carteira de Origem não encontrada."));
 
-        Carteira carteiraDestino = carteiraRepository.findById(destinoId).orElseThrow(()
+        Carteira carteiraDestino = carteiraPort.buscarId(destinoId).orElseThrow(()
                 -> new RuntimeException("Carteira de destino não encontrada."));
 
         if (carteiraOrigem.getId().equals(carteiraDestino.getId())) {
@@ -69,7 +69,7 @@ public class CarteiraService {
 
     public CarteiraResponseDTO consultarCarteira (Long carteiraId) {
 
-        Carteira carteira = carteiraRepository.findById(carteiraId).orElseThrow(()
+        Carteira carteira = carteiraPort.buscarId(carteiraId).orElseThrow(()
                 -> new RuntimeException("Carteira não encontrada!"));
 
         return new CarteiraResponseDTO(carteira.getId(), carteira.getSaldo(), carteira.getMoeda());
@@ -98,7 +98,7 @@ public class CarteiraService {
         novaCarteira.setMoeda("BRL");
         novaCarteira.setUsuario(usuario);
 
-        carteiraRepository.save(novaCarteira);
+        carteiraPort.salvar(novaCarteira);
 
         return new CarteiraResponseDTO(novaCarteira.getId(), novaCarteira.getSaldo(), novaCarteira.getMoeda());
     }
